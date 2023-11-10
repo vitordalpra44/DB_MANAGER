@@ -1,0 +1,1 @@
+#Esse código estabelece uma conexão com um banco mysql.
