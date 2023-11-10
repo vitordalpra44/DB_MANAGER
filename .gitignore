@@ -1,0 +1,3 @@
+/databases/*
+!/databases/ignore_folder/
+!/databases/ignore_folder/**
