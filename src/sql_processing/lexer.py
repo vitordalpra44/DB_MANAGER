@@ -179,7 +179,6 @@ class Lexer:
         current_token = ""
         inside_insert_clause = False
         inside_name_column_clause = False
-        inside_value_column_clause = False
         inside_values_clause = False
         
 
@@ -189,32 +188,26 @@ class Lexer:
             else:
                 if current_token.upper() == "INSERT" or current_token.upper() == "INTO":
                     inside_insert_clause = True
-                elif current_token == '(' and inside_values_clause == False:
-                    print("OIIIIIIIIIIIIIIIIIIIIIIIIIIIII")
+                elif current_token == "(" and not inside_values_clause:
                     inside_name_column_clause = True
                     inside_insert_clause = False
                 elif current_token.upper() == "VALUES":
                     inside_insert_clause = False
                     inside_name_column_clause = False
                     inside_values_clause = True
-                elif current_token == '(':
-                    inside_value_column_clause = True
-                    inside_insert_clause = False
-                    inside_name_column_clause = False
                 elif current_token == ";":
                     inside_insert_clause = False
                     inside_name_column_clause = False
-                    inside_value_column_clause = False
                     inside_values_clause = False
 
                 if char.isspace() or char in (',', ';', '(', ')', '*', '='):
                     if current_token and (current_token.upper() == "INSERT" or current_token.upper() == "INTO" or current_token.upper() == "VALUES"):
                         self.tokens.append(("KEYWORD", current_token))
-                    elif current_token and inside_insert_clause:
+                    elif current_token and inside_insert_clause and not inside_name_column_clause:
                         self.tokens.append(("TABLE", current_token))
                     elif current_token and inside_name_column_clause:
                         self.tokens.append(("NAME_COLUMN", current_token))
-                    elif current_token and inside_value_column_clause:
+                    elif current_token and inside_values_clause:
                         self.tokens.append(("VALUE_COLUMN", current_token))
                     elif current_token:
                         self.tokens.append(("UNDEFINED", current_token))
@@ -222,16 +215,18 @@ class Lexer:
                         self.tokens.append((char, char))
 
                     current_token = ""
-                
+            if char == '(' and inside_insert_clause:
+                inside_name_column_clause = True
+                inside_insert_clause = False       
 
         if current_token:
                     if (current_token.upper() == "INSERT" or current_token.upper() == "INTO" or current_token.upper() == "VALUES"):
                         self.tokens.append(("KEYWORD", current_token))
-                    elif inside_insert_clause:
+                    elif inside_insert_clause and not inside_name_column_clause:
                         self.tokens.append(("TABLE", current_token))
                     elif inside_name_column_clause:
                         self.tokens.append(("NAME_COLUMN", current_token))
-                    elif inside_value_column_clause:
+                    elif inside_values_clause:
                         self.tokens.append(("VALUE_COLUMN", current_token))
                     else:
                         self.tokens.append(("UNDEFINED", current_token))
