@@ -14,16 +14,3 @@ teaches-ID-(varchar(5)),course_id (varchar(8)),sec_id (varchar(8)),semester (var
 32343,HIS-351,1,Spring,2018
 15151,MU-199,1,Spring,2018
 22222,PHY-101,1,Fall,2017
-
-
-Hello. I need help with compiling an asn1 project in c++. I have already used your libraries for SBcAP, but now I need to use NGAP, but when I generate the sample code and try to compile the following error appears:
-g++ -m64 -Wl,--no-as-needed -o ngap-testmain ngap-testmain.o ngap-createvalue.o ngap-printvalue.o ngap.o -lm -ldl -lpthread /home/lacerda/asn1cpp/linux -x86-64/7.2.0/lib/libosscpp.a /home/lacerda/asn1cpp/linux-x86-64/7.2.0/lib/libcpptoed.a
-/usr/bin/ld: /home/lacerda/asn1cpp/linux-x86-64/7.2.0/lib/libosscpp.a(bitstr.o): relocation R_X86_64_32 against symbol `__gxx_personality_v0@@CXXABI_1.3' can not be used when making a PIE object; recompile with -fPIE
-/usr/bin/ld: failed to set dynamic section sizes: bad value
-collect2: error: ld returned 1 exit status
-make: * [makefile:50: ngap-testmain] Error 1
-
-
-However, I am already setting the -fPIE flag in the compilation. What measures can be taken?
-Thank you in advance
-Vitor Nievola Dalprá.
