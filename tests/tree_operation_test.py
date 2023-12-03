@@ -10,7 +10,7 @@ import lexer
 import queries
 global_var.database = "University"
 
-tables = ['teaches', 'instructor']
+tables = ['teaches', 'instructor', 'department']
 table_result = tree_operation_join(tables)
 save_tbl('teste', table_result)
 
@@ -32,7 +32,7 @@ for row in table_result:
 print("\n\n\nLISTA:")
 for row in lista:
     print(row)
-    
+
 tabela_final = where_execution(table_result, lista)
 print("\n\n\nTABELA WHERE:")
 for row in tabela_final:
