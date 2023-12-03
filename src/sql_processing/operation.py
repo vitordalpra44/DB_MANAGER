@@ -114,25 +114,14 @@ def update_tbl (tbl, tbl_filter, col, val, op = None):
             if row in tbl_filter:
                 row[col] = val
 
-# Retorna o índice da coluna em que se encontra um dado valor (tabela, valor)
-def return_column_n (tbl, val):
-    
-    count = 0
-    
-    for a in tbl[0]:
-        if tbl[0][a] == val:
-            return count
-    count += 1
-    
-    return (-1)
 
 # Retorna uma lista de índices onde se encontram os valores da lista de entrada (tabela, valores (lista))
-def column_list (tbl, vals):
+def column_list (tbl, tables, columns):
     
     list = []
 
-    for val in vals:
-        list.append(return_column_n(tbl, val))
+    for column, table in zip(columns, tables):
+        list.append(find_column_index(tbl, table, column))
     
     return list
 
