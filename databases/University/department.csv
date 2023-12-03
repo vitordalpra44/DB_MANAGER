@@ -1,8 +1,15 @@
-dept_name (varchar(20)),building (varchar(15)),"budget (decimal(12,2))"
-Biology,Watson,90000.00
-Comp. Sci.,Taylor,100000.00
-Elec. Eng.,Taylor,85000.00
-Finance,Painter,120000.00
-History,Painter,50000.00
-Music,Packard,80000.00
-Physics,Watson,70000.00
+department-dept_name-varchar(20);department-building-varchar(15);department-budget-decimal(12,2)
+Biology;Watson;90000.00
+Comp. Sci.;Taylor;100000.00
+Elec. Eng.;Taylor;85000.00
+Finance;Painter;120000.00
+History;Painter;50000.00
+Music;Packard;80000.00
+Physics;Watson;70000.00
+Biology;Watson;90000.00
+Comp. Sci.;Taylor;100000.00
+Elec. Eng.;Taylor;85000.00
+Finance;Painter;120000.00
+History;Painter;50000.00
+Music;Packard;80000.00
+Physics;Watson;70000.00

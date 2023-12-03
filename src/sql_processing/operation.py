@@ -1,8 +1,9 @@
 import csv
-
+import global_var
+import keywords as kw
 # Carrega uma tabela a partir do endereço do arquivo (tabela a ser carregada)
 def load_tbl(table):
-    with open(table, 'r') as f:
+    with open(f"../databases/{global_var.database}/{table}.csv", 'r') as f:
         reader = csv.reader(f, delimiter=';')
         return list(reader)
 
@@ -139,3 +140,65 @@ def find_column_index(table, table_name, column):
 
 
 
+def Unite_tables (tbl1, tbl2):
+    tbl_result = []
+    tbl_result = tbl1
+
+    for row in tbl2:
+        if row not in tbl_result:
+            tbl_result.append(row)
+
+    return tbl_result
+
+def save_tbl(table_name, table):
+    with open(f"../databases/{global_var.database}/{table_name}.csv", 'w') as f:
+        reader = csv.writer(f)
+        for row in table:
+            reader.writerow(row)
+
+def where_execution (tbl, command_list):
+    tbl_where = []
+    tbl_result_and = []
+    tbl_result_final = []
+
+    for cmd_row in command_list:
+        if cmd_row[2] != kw.keyword_and and cmd_row[2] != kw.keyword_or:
+            tbl_where.append(cmd_row)
+
+    where_index = 0
+    tbl_aux_and = tbl
+
+    for cmd_row in command_list:
+        if cmd_row[2] == kw.keyword_and:
+            if cmd_row[0] == -1:
+                tbl_aux_and = filter_value(tbl_aux_and, find_column_index(tbl_aux_and, tbl_where[where_index][3], tbl_where[where_index][4]), tbl_where[where_index][1], tbl_where[where_index][2])
+            if cmd_row[3] == -1:
+                tbl_aux_and = filter_value(tbl_aux_and, find_column_index(tbl_aux_and, tbl_where[where_index][0], tbl_where[where_index][1]), tbl_where[where_index][4], tbl_where[where_index][2])
+            else:
+                tbl_aux_and = filter_column(tbl_aux_and, find_column_index(tbl_aux_and, tbl_where[where_index][0], tbl_where[where_index][1]),find_column_index(tbl, tbl_where[where_index][3], tbl_where[where_index][4]), tbl_where[where_index][2])
+            where_index += 1
+        elif cmd_row[2] == kw.keyword_or:
+            tbl_result_and.append(tbl_and_aux)
+            tbl_and_aux = tbl
+
+    and_index = 0
+
+    for cmd_row in command_list:
+        if cmd_row[2] == kw.keyword_or:
+            tbl_and_aux = Unite_tables(tbl_result_final, tbl_result_and[and_index])
+            and_index += 1
+
+    return tbl_result_final
+
+
+
+def join_filter_execution (tbl, command_list):
+
+    tbl_result = tbl
+
+    for row in command_list:
+        if (row[2] == -2):
+            tbl_result = filter_column (tbl_result, find_column_index(tbl_result, row[0], row[1]), find_column_index(tbl_result, row[3], row[1]), '=')
+        else:
+            tbl_result = filter_column (tbl_result, find_column_index(tbl_result, row[0], row[1]), find_column_index(tbl_result, row[3], row[4]), row[2])
+    return tbl_result

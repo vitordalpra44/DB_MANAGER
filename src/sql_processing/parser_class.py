@@ -8,12 +8,11 @@ class Node:
     def print_tree(self, indent=""):
         print(f"{indent}{self.node_type}: {self.value}")
         for child in self.children:
-            child.print_tree(indent + "  ")
+            child.print_tree(indent + "\t")
 
 def parse_select(tokens):
     root = Node("MOXTRAI")
     current_node = root
-    last_father = ""
     for token_type, token_value in tokens:
         if token_type == "COLUMN":
             current_node.children.append(Node("COLUMN", token_value))

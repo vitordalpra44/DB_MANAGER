@@ -1,6 +1,7 @@
 {
     "python.analysis.extraPaths": [
         "./src/mysql",
-        "./src/sql_processing"
+        "./src/sql_processing",
+        "../src"
     ]
 }
