@@ -160,7 +160,7 @@ def where_execution (tbl, command_list):
     tbl_where = []
     tbl_result_and = []
     tbl_result_final = []
-
+    print("\n\n\nWHERE_EXECUTION:")
     for cmd_row in command_list:
         if cmd_row[2] != kw.keyword_and and cmd_row[2] != kw.keyword_or:
             tbl_where.append(cmd_row)
@@ -175,17 +175,26 @@ def where_execution (tbl, command_list):
             if cmd_row[3] == -1:
                 tbl_aux_and = filter_value(tbl_aux_and, find_column_index(tbl_aux_and, tbl_where[where_index][0], tbl_where[where_index][1]), tbl_where[where_index][4], tbl_where[where_index][2])
             else:
+                
                 tbl_aux_and = filter_column(tbl_aux_and, find_column_index(tbl_aux_and, tbl_where[where_index][0], tbl_where[where_index][1]),find_column_index(tbl, tbl_where[where_index][3], tbl_where[where_index][4]), tbl_where[where_index][2])
+                #TÁ certo
+                for i in tbl_aux_and:
+                    print(i)
+
             where_index += 1
+
         elif cmd_row[2] == kw.keyword_or:
-            tbl_result_and.append(tbl_and_aux)
-            tbl_and_aux = tbl
+            tbl_result_and.append(tbl_aux_and)
+            tbl_aux_and = tbl
+
+        for row in tbl_result_and:
+            print(row)
 
     and_index = 0
 
     for cmd_row in command_list:
         if cmd_row[2] == kw.keyword_or:
-            tbl_and_aux = Unite_tables(tbl_result_final, tbl_result_and[and_index])
+            tbl_result_final = Unite_tables(tbl_result_final, tbl_result_and[and_index])
             and_index += 1
 
     return tbl_result_final
