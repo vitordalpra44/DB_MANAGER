@@ -3,7 +3,7 @@ import csv
 # Carrega uma tabela a partir do endereço do arquivo (tabela a ser carregada)
 def load_tbl(table):
     with open(table, 'r') as f:
-        reader = csv.reader(f, delimiter=',')
+        reader = csv.reader(f, delimiter=';')
         return list(reader)
 
 # Realiza o produto cartesiano entre duas tabelas (tabela 1, tabela 2)
@@ -136,17 +136,17 @@ def column_list (tbl, vals):
     
     return list
 
-# --------------Exemplo e testes---------------------#
+#retorna o indice de uma coluna csv com base no nome da tabela e da coluna
+def find_column_index(table, table_name, column):
+    index = 0
+    for column_info in table[0]:
+        parts = column_info.split('-')
+        
+        if len(parts) == 3 and parts[0] == table_name and parts[1] == column:
+            return index
+        index += 1
 
-#tbl = load_tbl(r'../../databases/University/teaches.csv')
-#
-#tbl_f = filter_value(tbl, 4, '2017', '=')
-#
-#update_tbl(tbl, tbl_f,  2, 40)
-#
-#for row in tbl:
-#    print(row)
-#
-#print("\n\n\n")
-#for row in tbl_f:
-#    print(row)
+    return -1
+
+
+

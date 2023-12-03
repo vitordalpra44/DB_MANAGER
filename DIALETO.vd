@@ -1,7 +1,6 @@
 Esse arquivo define as palavras usadas para gerar a query.
 
 "SELECT" = "MOXTRAÍ"
-"FROM" = "CAMARADA"
 "JOIN" = "MIXTURA"
 "WHERE" = "FIRMEZA"
 "ORDER BY" = "BOLADO"
@@ -13,7 +12,7 @@ Esse arquivo define as palavras usadas para gerar a query.
 "UPDATE" = "ARRUMAÍ"
 "INSERT INTO" = "BOTAÍ"
 "SET" = "BOTANDO"
-"VALUES" = "AS PARADAS"
+"VALUES" = "PARADAS"
 
 
 

@@ -1,3 +1,6 @@
+import keywords
+
+
 class Lexer:
     def __init__(self, query):
         self.query = query
@@ -9,95 +12,82 @@ class Lexer:
 
     def tokenize_select(self):
         current_token = ""
-        inside_select_clause = False
-        inside_from_clause = False
         inside_join_clause = False
         inside_on_clause = False
         inside_where_clause = False
         inside_order_by_clause = False
-        inside_using_clause = False
+
+
+        table_column = ("","")
+
         for char in self.query:
-            if char.isalnum() or char == '_':
+            if char.isalnum() or char == '_' or char =='.':
                 current_token += char
             else:
-                if current_token.upper() == "SELECT":
-                    inside_select_clause = True
-                elif current_token.upper() == "FROM":
-                    inside_from_clause = True
-                    inside_select_clause = False
-                elif current_token.upper() == "JOIN":
-                    inside_from_clause = False
+                table_column = ("","")
+                if '.' in current_token:
+                    table_column = current_token.split('.')
+                elif current_token.upper() == keywords.keyword_join:
                     inside_on_clause = False
-                    inside_using_clause = False
                     inside_join_clause = True
-                elif current_token.upper() == "ON":
+                elif current_token.upper() == keywords.keyword_on:
                     inside_join_clause = False
                     inside_on_clause = True
-                elif current_token.upper() == "USING":
+                elif current_token.upper() == keywords.keyword_using:
                     inside_join_clause = False
-                    inside_using_clause = True
-                elif current_token.upper() == "WHERE":
-                    inside_from_clause = False
+                elif current_token.upper() == keywords.keyword_where:
                     inside_on_clause = False
-                    inside_using_clause = False
                     inside_where_clause = True
-                elif current_token.upper() == "ORDER_BY":
-                    inside_from_clause = False
+                elif current_token.upper() == keywords.keyword_order_by:
                     inside_on_clause = False
-                    inside_using_clause = False
                     inside_where_clause = False
                     inside_order_by_clause = True
                 elif current_token == ";":
-                    inside_select_clause = False
-                    inside_from_clause = False
                     inside_join_clause = False
                     inside_on_clause = False
-                    inside_using_clause = False
                     inside_where_clause = False
                     inside_order_by_clause = False
 
-                if char.isspace() or char in (',', ';', '(', ')', '*', '='):
-                    if current_token and (current_token.upper() == "SELECT" or current_token.upper() == "FROM" or current_token.upper() == "JOIN" or current_token.upper() == "WHERE" or current_token.upper() == "USING" or current_token.upper() == "ON" or current_token.upper() == "ORDER_BY" or current_token.upper() == "AND" or current_token.upper() == "OR"):
+                if char.isspace() or char in (',', ';', '(', ')', '*', '=', '>', '<', '!'):
+                    if current_token and (current_token.upper() in keywords.keywords):
                         self.tokens.append(("KEYWORD", current_token))
-                    elif current_token and inside_select_clause:
-                        self.tokens.append(("COLUMN", current_token))
-                    elif current_token and inside_from_clause:
-                        self.tokens.append(("TABLE", current_token))
+                    elif table_column[0] and table_column[1]:
+                        self.tokens.append(("TABLE", table_column[0]))
+                        self.tokens.append(("COLUMN", table_column[1]))
                     elif current_token and inside_join_clause:
-                        self.tokens.append(("JOIN_VAR", current_token))
+                        self.tokens.append(("TABLE", current_token))
                     elif current_token and inside_on_clause:
-                        self.tokens.append(("ON_VAR", current_token))
-                    elif current_token and inside_using_clause:
-                        self.tokens.append(("USING_VAR", current_token))
+                        self.tokens.append(("VALUE", current_token))
                     elif current_token and inside_where_clause:
-                        self.tokens.append(("WHERE_VAR", current_token))
+                        self.tokens.append(("VALUE", current_token))
                     elif current_token and inside_order_by_clause:
-                        self.tokens.append(("ORDER_BY_VAR", current_token))
+                        self.tokens.append(("VALUE", current_token))
                     elif current_token:
                         self.tokens.append(("UNDEFINED", current_token))
                     if char != ' ':
-                        self.tokens.append((char, char))
+                        if(char in ['>', '<', '=', '!']):
+                            self.tokens.append(("OPERATION", char))
+                        else:
+                            self.tokens.append((char, char))
 
                     current_token = ""
                 
+                
 
         if current_token:
-                    if (current_token.upper() == "SELECT" or current_token.upper() == "FROM" or current_token.upper() == "JOIN" or current_token.upper() == "WHERE" or current_token.upper() == "USING" or current_token.upper() == "ON" or current_token.upper() == "ORDER_BY" or current_token.upper() == "AND" or current_token.upper() == "OR"):
+                    if  (current_token.upper() in keywords.keywords):
                         self.tokens.append(("KEYWORD", current_token))
-                    elif inside_select_clause:
-                        self.tokens.append(("COLUMN", current_token))
-                    elif inside_from_clause:
+                    elif table_column[0] and table_column[1]:
+                        self.tokens.append(("TABLE", table_column[0]))
+                        self.tokens.append(("COLUMN", table_column[1]))
+                    elif  inside_join_clause:
                         self.tokens.append(("TABLE", current_token))
-                    elif inside_join_clause:
-                        self.tokens.append(("JOIN_VAR", current_token))
-                    elif inside_on_clause:
-                        self.tokens.append(("ON_VAR", current_token))
-                    elif inside_using_clause:
-                        self.tokens.append(("USING_VAR", current_token))
-                    elif inside_where_clause:
-                        self.tokens.append(("WHERE_VAR", current_token))
-                    elif inside_order_by_clause:
-                        self.tokens.append(("ORDER_BY_VAR", current_token))
+                    elif  inside_on_clause:
+                        self.tokens.append(("VALUE", current_token))
+                    elif  inside_where_clause:
+                        self.tokens.append(("VALUE", current_token))
+                    elif  inside_order_by_clause:
+                        self.tokens.append(("VALUE", current_token))
                     elif current_token:
                         self.tokens.append(("UNDEFINED", current_token))
 
@@ -107,72 +97,75 @@ class Lexer:
         inside_join_clause = False
         inside_on_clause = False
         inside_where_clause = False
-        inside_using_clause = False
 
+
+        table_column = ("","")
         for char in self.query:
-            if char.isalnum() or char == '_':
+            if char.isalnum() or char == '_' or char == '.':
                 current_token += char
             else:
-                if current_token.upper() == "DELETE" or current_token.upper() == "FROM":
+                table_column = ("","")
+                if '.' in current_token:
+                    table_column = current_token.split('.')
+                elif current_token.upper() == keywords.keyword_delete_from:
                     inside_delete_clause = True
-                elif current_token.upper() == "JOIN":
+                elif current_token.upper() == keywords.keyword_join:
                     inside_delete_clause = False
                     inside_on_clause = False
-                    inside_using_clause = False
                     inside_join_clause = True
-                elif current_token.upper() == "ON":
+                elif current_token.upper() == keywords.keyword_on:
                     inside_join_clause = False
                     inside_on_clause = True
-                elif current_token.upper() == "USING":
+                elif current_token.upper() == keywords.keyword_using:
                     inside_join_clause = False
-                    inside_using_clause = True
-                elif current_token.upper() == "WHERE":
+                elif current_token.upper() == keywords.keyword_where:
                     inside_delete_clause = False
                     inside_on_clause = False
-                    inside_using_clause = False
                     inside_where_clause = True
                 elif current_token == ";":
                     inside_delete_clause = False
                     inside_join_clause = False
                     inside_on_clause = False
-                    inside_using_clause = False
                     inside_where_clause = False
 
-                if char.isspace() or char in (',', ';', '(', ')', '*', '='):
-                    if current_token and (current_token.upper() == "DELETE" or current_token.upper() == "FROM" or current_token.upper() == "JOIN" or current_token.upper() == "WHERE" or current_token.upper() == "USING" or current_token.upper() == "ON" or current_token.upper() == "AND" or current_token.upper() == "OR"):
+                if char.isspace() or char in (',', ';', '(', ')', '*', '=', '>', '<', '!'):
+                    if current_token and (current_token.upper() in keywords.keywords):
                         self.tokens.append(("KEYWORD", current_token))
+                    elif table_column[0] and table_column[1]:
+                        self.tokens.append(("TABLE", table_column[0]))
+                        self.tokens.append(("COLUMN", table_column[1]))
                     elif current_token and inside_delete_clause:
                         self.tokens.append(("TABLE", current_token))
                     elif current_token and inside_join_clause:
-                        self.tokens.append(("JOIN_VAR", current_token))
+                        self.tokens.append(("TABLE", current_token))
                     elif current_token and inside_on_clause:
-                        self.tokens.append(("ON_VAR", current_token))
-                    elif current_token and inside_using_clause:
-                        self.tokens.append(("USING_VAR", current_token))
+                        self.tokens.append(("VALUE", current_token))
                     elif current_token and inside_where_clause:
-                        self.tokens.append(("WHERE_VAR", current_token))
+                        self.tokens.append(("VALUE", current_token))
                     elif current_token:
                         self.tokens.append(("UNDEFINED", current_token))
                     if char != ' ':
-                        self.tokens.append((char, char))
+                        if(char in ['>', '<', '=', '!']):
+                            self.tokens.append(("OPERATION", char))
+                        else:
+                            self.tokens.append((char, char))
 
                     current_token = ""
                 
 
         if current_token:
-                    if (current_token.upper() == "DELETE" or current_token.upper() == "FROM" or current_token.upper() == "JOIN" or current_token.upper() == "WHERE" or current_token.upper() == "USING" or current_token.upper() == "ON" or current_token.upper() == "AND" or current_token.upper() == "OR"):
+                    if (current_token.upper() in keywords.keywords):
                         self.tokens.append(("KEYWORD", current_token))
-                    elif inside_delete_clause:
-                        self.tokens.append(("TABLE", current_token))
+                    elif table_column[0] and table_column[1]:
+                        self.tokens.append(("TABLE", table_column[0]))
+                        self.tokens.append(("COLUMN", table_column[1]))
                     elif inside_join_clause:
-                        self.tokens.append(("JOIN_VAR", current_token))
+                        self.tokens.append(("TABLE", current_token))
                     elif inside_on_clause:
-                        self.tokens.append(("ON_VAR", current_token))
-                    elif inside_using_clause:
-                        self.tokens.append(("USING_VAR", current_token))
+                        self.tokens.append(("VALUE", current_token))
                     elif inside_where_clause:
-                        self.tokens.append(("WHERE_VAR", current_token))
-                    else:
+                        self.tokens.append(("VALUE", current_token))
+                    elif current_token:
                         self.tokens.append(("UNDEFINED", current_token))
 
     def tokenize_insert(self):
@@ -186,12 +179,12 @@ class Lexer:
             if char.isalnum() or char == '_':
                 current_token += char
             else:
-                if current_token.upper() == "INSERT" or current_token.upper() == "INTO":
+                if current_token.upper() == keywords.keyword_insert_into:
                     inside_insert_clause = True
                 elif current_token == "(" and not inside_values_clause:
                     inside_name_column_clause = True
                     inside_insert_clause = False
-                elif current_token.upper() == "VALUES":
+                elif current_token.upper() == keywords.keyword_values:
                     inside_insert_clause = False
                     inside_name_column_clause = False
                     inside_values_clause = True
@@ -200,8 +193,8 @@ class Lexer:
                     inside_name_column_clause = False
                     inside_values_clause = False
 
-                if char.isspace() or char in (',', ';', '(', ')', '*', '='):
-                    if current_token and (current_token.upper() == "INSERT" or current_token.upper() == "INTO" or current_token.upper() == "VALUES"):
+                if char.isspace() or char in (',', ';', '(', ')', '*', '=', '>', '<', '!'):
+                    if current_token and (current_token.upper() in keywords.keywords):
                         self.tokens.append(("KEYWORD", current_token))
                     elif current_token and inside_insert_clause and not inside_name_column_clause:
                         self.tokens.append(("TABLE", current_token))
@@ -212,15 +205,19 @@ class Lexer:
                     elif current_token:
                         self.tokens.append(("UNDEFINED", current_token))
                     if char != ' ':
-                        self.tokens.append((char, char))
+                        if char == '(':
+                            self.tokens.append(("NEW_VALUE", char))
+                        else:
+                            self.tokens.append((char, char))
 
                     current_token = ""
             if char == '(' and inside_insert_clause:
+                
                 inside_name_column_clause = True
                 inside_insert_clause = False       
 
         if current_token:
-                    if (current_token.upper() == "INSERT" or current_token.upper() == "INTO" or current_token.upper() == "VALUES"):
+                    if (current_token.upper() in keywords.keywords):
                         self.tokens.append(("KEYWORD", current_token))
                     elif inside_insert_clause and not inside_name_column_clause:
                         self.tokens.append(("TABLE", current_token))
@@ -231,16 +228,99 @@ class Lexer:
                     else:
                         self.tokens.append(("UNDEFINED", current_token))
 
+
+
+    def tokenize_update(self):
+        current_token = ""
+        inside_update_clause = False
+        inside_where_clause = False
+        inside_set_clause = False
+        inside_column_clause = False
+
+        table_column = ("","")
+        for char in self.query:
+            if char.isalnum() or char == '_' or char == '.':
+                current_token += char
+            else:
+                table_column = ("","")
+                if '.' in current_token:
+                    table_column = current_token.split('.')
+                elif current_token.upper() == keywords.keyword_update:
+                    inside_update_clause = True
+                elif current_token.upper() == keywords.keyword_where:
+                    inside_update_clause = False
+                    inside_where_clause = True
+                    inside_column_clause = False
+                    inside_set_clause = False
+
+                elif current_token.upper() == keywords.keyword_set:
+                    inside_update_clause = False
+                    inside_where_clause = False
+                    inside_set_clause = True
+                elif current_token.upper() == "=" and inside_set_clause:
+                    inside_update_clause = False
+                    inside_where_clause = False
+                    inside_set_clause = False
+                    inside_column_clause = True
+                elif current_token == ";":
+                    inside_update_clause = False
+                    inside_where_clause = False
+
+                if char.isspace() or char in (',', ';', '(', ')', '*', '=', '>', '<', '!'):
+                    if current_token and (current_token.upper() in keywords.keywords):
+                        self.tokens.append(("KEYWORD", current_token))
+                    elif table_column[0] and table_column[1]:
+                        self.tokens.append(("TABLE", table_column[0]))
+                        self.tokens.append(("COLUMN", table_column[1]))
+                    elif current_token and inside_update_clause:
+                        self.tokens.append(("TABLE", current_token))
+                    elif current_token and inside_where_clause:
+                        self.tokens.append(("VALUE", current_token))
+                    elif current_token and inside_column_clause:
+                        self.tokens.append(("VALUE", current_token))
+                    elif current_token and inside_set_clause:
+                        self.tokens.append(("COLUMN", current_token))
+                    elif current_token:
+                        self.tokens.append(("UNDEFINED", current_token))
+                    if char != ' ':
+                        if(char in ['>', '<', '=', '!']):
+                            self.tokens.append(("OPERATION", char))
+                        else:
+                            self.tokens.append((char, char))
+
+                    current_token = ""
+                
+
+        if current_token:
+                    if  (current_token.upper() in keywords.keywords):
+                        self.tokens.append(("KEYWORD", current_token))
+                    elif table_column[0] and table_column[1]:
+                        self.tokens.append(("TABLE", table_column[0]))
+                        self.tokens.append(("COLUMN", table_column[1]))
+                    elif  inside_update_clause:
+                        self.tokens.append(("TABLE", current_token))
+                    elif  inside_where_clause:
+                        self.tokens.append(("VALUE", current_token))
+                    elif  inside_column_clause:
+                        self.tokens.append(("VALUE", current_token))
+                    elif  inside_set_clause:
+                        self.tokens.append(("COLUMN", current_token))
+                    elif current_token:
+                        self.tokens.append(("UNDEFINED", current_token))
+
     def tokenize(self):
-        if "SELECT" in self.query.upper():
+        if keywords.keyword_select in self.query.upper():
             self.tokenize_select()
-            self.type="SELECT"
-        elif "DELETE" in self.query.upper():
+            self.type=keywords.keyword_select
+        elif keywords.keyword_delete_from in self.query.upper():
             self.tokenize_delete()
-            self.type="DELETE"
-        elif "INSERT" in self.query.upper():
+            self.type=keywords.keyword_delete_from
+        elif keywords.keyword_insert_into in self.query.upper():
             self.tokenize_insert()
-            self.type="INSERT"
+            self.type=keywords.keyword_insert_into
+        elif keywords.keyword_update in self.query.upper():
+            self.tokenize_update()
+            self.type=keywords.keyword_update
         else:
             print("Query is not parseable")
 
