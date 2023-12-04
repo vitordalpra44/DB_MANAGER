@@ -116,21 +116,21 @@ def delete_row(tbl, tbl_filter):
 # Atualiza tabela segundo uma versão filtrada da mesma , um valor e como essse valor será aplicado na atualização (tabela, tabela filtrada, coluna, valor,
 #  operação(None para substituição, '*' para multiplicar o valor presente e '+' para adicionar ao valor presente))
 def update_tbl (tbl, tbl_filter, col, val, op = None):
-        
-    if (op == '*'):    
-        for row in tbl:
-            if row in tbl_filter:
-                row[col] = int(row[col]) * int(val)
+
+    if (op == '*'):
+        for a in range(1, len(tbl)):
+            if tbl[a] in tbl_filter:
+                tbl[a][col] = str(eval(tbl[a][col]) * eval(val))
 
     elif (op == '+'):
-        for row in tbl:
-            if row in tbl_filter:
-                row[col] = int(row[col]) +int(val)
+        for a in range(1, len(tbl)):
+            if tbl[a] in tbl_filter:
+                tbl[a][col] = str(eval(tbl[a][col]) + eval(val))
 
     else:
-        for row in tbl:
-            if row in tbl_filter:
-                row[col] = val
+        for a in range(1, len(tbl)):
+            if tbl[a] in tbl_filter:
+                tbl[a][col] = val
 
 
 # Retorna uma lista de índices onde se encontram os valores da lista de entrada (tabela, valores (lista))

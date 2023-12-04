@@ -9,4 +9,4 @@ queryLeti = f"{keywords.keyword_select}  instructor.dept_name {keywords.keyword_
 queryLetiDelete = f"{keywords.keyword_delete_from} instructor {keywords.keyword_where} instructor.dept_name = Biology {keywords.keyword_or} instructor.ID = 10101 {keywords.keyword_or} instructor.salary < 90000 ;"
 querySelect1 = f"{keywords.keyword_select}  department.*, instructor.*  {keywords.keyword_order_by} instructor.dept_name "
 queryInsert1 = f"{keywords.keyword_insert_into}  instructor  {keywords.keyword_values} (100, Vitor, Comp, 100000) (101, Daniel, Comp2, 900000) "
-queryUpdate1 = f"{keywords.keyword_update} instructor {keywords.keyword_set} ID + 1 "
+queryUpdate1 = f"{keywords.keyword_update} instructor {keywords.keyword_set} name = Leticia "
