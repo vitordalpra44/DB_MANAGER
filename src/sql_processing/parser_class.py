@@ -13,7 +13,7 @@ class Node:
             child.print_tree(indent + "\t")
 
 def parse_select(tokens):
-    root = Node("MOXTRAI")
+    root = Node("MOXTRAÍ")
     current_node = root
     for token_type, token_value in tokens:
         if token_type == "COLUMN":
@@ -111,6 +111,7 @@ def parser(query):
     lexerObj = lexer.Lexer(query)
     lexerObj.tokenize()
     tokens = lexerObj.get_tokens()
+
 
     if tokens[0][1] == keywords.keyword_select:
         return parse_select(tokens)

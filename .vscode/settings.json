@@ -3,6 +3,8 @@
         "./src/mysql",
         "./src/sql_processing",
         "../src",
-        "./tests"
+        "./tests",
+        "./sql_processing",
+        "./mysql"
     ]
 }

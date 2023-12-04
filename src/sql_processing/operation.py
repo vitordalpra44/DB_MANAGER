@@ -169,7 +169,7 @@ def Unite_tables (tbl1, tbl2):
 
 def save_tbl(table_name, table):
     with open(f"../databases/{global_var.database}/{table_name}.csv", 'w') as f:
-        reader = csv.writer(f)
+        reader = csv.writer(f, delimiter=";")
         for row in table:
             reader.writerow(row)
 

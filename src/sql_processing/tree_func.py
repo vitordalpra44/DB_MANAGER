@@ -1,4 +1,4 @@
-import parser_class
+from parser_class import *
 from operation import *
 import keywords
 def tree_operation_tables(root, tables):
@@ -168,14 +168,14 @@ def tree_operation_delete(root):
     table_1 = tree_operation_cartesian(root)
     table_2 = tree_operation_where(root, table_1)
     table_1 = delete_row(table_1, table_2)
-    return table_1
+    save_tbl(root.children[1].value,table_1)
 
 def tree_operation_insert(root):
     table_1 = tree_operation_cartesian(root)
     values = tree_operation_insert_values(root)
     for row in values:
         table_1.append(row)
-    return table_1
+    save_tbl(root.children[1].value,table_1)
 
 def tree_operation_update(root):
     table_1 = tree_operation_cartesian(root)
@@ -202,5 +202,20 @@ def tree_operation_update(root):
     print(val)
     print(operation)
     update_tbl(table_1, table_2, col, val, operation)
+    save_tbl(table, table_1)
 
-    return table_1
+def tree_operation(query):
+    root = parser(query)
+    if root.node_type == keywords.keyword_select:
+        return tree_operation_select(root)
+    elif root.node_type == keywords.keyword_delete_from:
+        tree_operation_delete(root)
+        return -1
+    elif root.node_type == keywords.keyword_insert_into:
+        tree_operation_insert(root)
+        return -1
+    elif root.node_type == keywords.keyword_update:
+        tree_operation_update(root)
+        return -1
+    
+
