@@ -10,34 +10,14 @@ import lexer
 import queries
 global_var.database = "University"
 
-tables = ['teaches', 'instructor', 'department']
-table_result = tree_operation_join(tables)
-save_tbl('teste', table_result)
+root = parser(queries.queryUpdate1)
+root.print_tree()
 
-lexerV = lexer.Lexer(queries.queryWhere)
-lexerV.tokenize()
-tokens = lexerV.get_tokens()
+table_select = tree_operation_update(root)
 
-syntax_tree = parse_select(tokens)
-syntax_tree.print_tree()
-node_where = None
-for node in syntax_tree.children:
-    if node.node_type == keywords.keyword_where.upper():
-        node_where = node
 
-lista = tree_operation_where(node_where)
-print("\n\n\nTABELA CRUA:")
-for row in table_result:
+for row in table_select:
     print(row)
-print("\n\n\nLISTA:")
-for row in lista:
-    print(row)
-
-tabela_final = where_execution(table_result, lista)
-print("\n\n\nTABELA WHERE:")
-for row in tabela_final:
-    print(row)
-
-
+print(f"\n\nrows({len(table_select)-1})")
 
 

@@ -21,7 +21,7 @@ class Lexer:
         table_column = ("","")
 
         for char in self.query:
-            if char.isalnum() or char == '_' or char =='.':
+            if char.isalnum() or char == '_' or char =='.' or char == '*':
                 current_token += char
             else:
                 table_column = ("","")
@@ -101,7 +101,7 @@ class Lexer:
 
         table_column = ("","")
         for char in self.query:
-            if char.isalnum() or char == '_' or char == '.':
+            if char.isalnum() or char == '_' or char == '.' or char == '*':
                 current_token += char
             else:
                 table_column = ("","")
@@ -176,7 +176,7 @@ class Lexer:
         
 
         for char in self.query:
-            if char.isalnum() or char == '_':
+            if char.isalnum() or char == '_' or char == '*':
                 current_token += char
             else:
                 if current_token.upper() == keywords.keyword_insert_into:
@@ -239,7 +239,7 @@ class Lexer:
 
         table_column = ("","")
         for char in self.query:
-            if char.isalnum() or char == '_' or char == '.':
+            if char.isalnum() or char == '_' or char == '.' or char == '*':
                 current_token += char
             else:
                 table_column = ("","")
@@ -257,7 +257,7 @@ class Lexer:
                     inside_update_clause = False
                     inside_where_clause = False
                     inside_set_clause = True
-                elif current_token.upper() == "=" and inside_set_clause:
+                elif (current_token.upper() == "=" or current_token.upper() == "*" or current_token.upper() == "+") and inside_set_clause:
                     inside_update_clause = False
                     inside_where_clause = False
                     inside_set_clause = False
@@ -266,7 +266,7 @@ class Lexer:
                     inside_update_clause = False
                     inside_where_clause = False
 
-                if char.isspace() or char in (',', ';', '(', ')', '*', '=', '>', '<', '!'):
+                if char.isspace() or char in (',', ';', '(', ')', '*', '=', '>', '<', '!', '+'):
                     if current_token and (current_token.upper() in keywords.keywords):
                         self.tokens.append(("KEYWORD", current_token))
                     elif table_column[0] and table_column[1]:
@@ -283,7 +283,7 @@ class Lexer:
                     elif current_token:
                         self.tokens.append(("UNDEFINED", current_token))
                     if char != ' ':
-                        if(char in ['>', '<', '=', '!']):
+                        if(char in ['>', '<', '=', '!', '+', "*"]):
                             self.tokens.append(("OPERATION", char))
                         else:
                             self.tokens.append((char, char))

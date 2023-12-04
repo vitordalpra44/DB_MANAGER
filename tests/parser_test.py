@@ -6,7 +6,7 @@ from parser_class import *
 import lexer
 import queries
 
-lexerV = lexer.Lexer(queries.queryWhere)
+lexerV = lexer.Lexer(queries.querySelect)
 lexerV.tokenize()
 tokens = lexerV.get_tokens()
 

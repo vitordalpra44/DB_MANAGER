@@ -66,18 +66,38 @@ def filter_value (tbl, col, val, op):
 
     return tbl_result
 
-# Ordena as entradas de uma tabela com base em uma coluna (tabela, coluna, ordem descendente (booleano))
-def order (tbl, col, desc = False):
-    tbl.sort(key = lambda x : x[col], reverse= desc)
 
+def is_float(value):
+    try:
+        float(value)
+        return True
+    except ValueError:
+        return False
+    
+# Ordena as entradas de uma tabela com base em uma coluna (tabela, coluna, ordem descendente (booleano))
+def order (tbl, table_name, column_name):
+    col = find_column_index(tbl, table_name, column_name)
+    tabela_final = []
+
+    for row in enumerate(tbl, start=1):
+        if(row[0] != 1):
+            tabela_final.append(row[1])
+
+    tabela_final.sort(key=lambda x: (float(x[col]) if is_float(x[col]) else x[col]))
+    tabela_final.insert(0, tbl[0])
+    return tabela_final
+
+    
 # Filtra quais colunas estão presentes em uma tabela (tabela, colunas(lista cotendo os int das colunas))
 def column_selection(tbl, cols):
     tbl_result = []
-
+    if cols == -2:
+        return tbl
     for row in tbl:
         n_row = []
         col_count = 0
         for c in row:
+
             if col_count in cols:
                 n_row.append(c)
             col_count += 1
@@ -90,11 +110,8 @@ def column_selection(tbl, cols):
 
 # Deleta uma linha com base em uma tabela secundária filtrada da primeira (tabela, tabela filtrada)
 def delete_row(tbl, tbl_filter):
-    counter = 0
-    for row in tbl:
-        if row in tbl_filter:
-            tbl.pop(counter)
-        counter += 1
+    tbl_result = [row for row in tbl if tuple(row) not in set(map(tuple, tbl_filter))]
+    return tbl_result
 
 # Atualiza tabela segundo uma versão filtrada da mesma , um valor e como essse valor será aplicado na atualização (tabela, tabela filtrada, coluna, valor,
 #  operação(None para substituição, '*' para multiplicar o valor presente e '+' para adicionar ao valor presente))
@@ -103,12 +120,12 @@ def update_tbl (tbl, tbl_filter, col, val, op = None):
     if (op == '*'):    
         for row in tbl:
             if row in tbl_filter:
-                row[col] = row[col] * val
+                row[col] = int(row[col]) * int(val)
 
     elif (op == '+'):
         for row in tbl:
             if row in tbl_filter:
-                row[col] = row[col] + val
+                row[col] = int(row[col]) +int(val)
 
     else:
         for row in tbl:
@@ -160,7 +177,6 @@ def where_execution (tbl, command_list):
     tbl_where = []
     tbl_result_and = []
     tbl_result_final = []
-    print("\n\n\nWHERE_EXECUTION:")
     for cmd_row in command_list:
         if cmd_row[2] != kw.keyword_and and cmd_row[2] != kw.keyword_or:
             tbl_where.append(cmd_row)
@@ -168,15 +184,21 @@ def where_execution (tbl, command_list):
     where_index = 0
     tbl_aux_and = tbl
 
+    if tbl_where[where_index][0] == -1:
+        tbl_aux_and = filter_value(tbl_aux_and, find_column_index(tbl_aux_and, tbl_where[where_index][3], tbl_where[where_index][4]), tbl_where[where_index][1], tbl_where[where_index][2])
+    if tbl_where[where_index][3] == -1:
+        tbl_aux_and = filter_value(tbl_aux_and, find_column_index(tbl_aux_and, tbl_where[where_index][0], tbl_where[where_index][1]), tbl_where[where_index][4], tbl_where[where_index][2])
+    else:
+        tbl_aux_and = filter_column(tbl_aux_and, find_column_index(tbl_aux_and, tbl_where[where_index][0], tbl_where[where_index][1]),find_column_index(tbl, tbl_where[where_index][3], tbl_where[where_index][4]), tbl_where[where_index][2])
+    where_index += 1
+
     for cmd_row in command_list:
-        print("oi\n\n")
         if cmd_row[2] == kw.keyword_and:
-            if cmd_row[0] == -1:
+            if tbl_where[where_index][0] == -1:
                 tbl_aux_and = filter_value(tbl_aux_and, find_column_index(tbl_aux_and, tbl_where[where_index][3], tbl_where[where_index][4]), tbl_where[where_index][1], tbl_where[where_index][2])
-            if cmd_row[3] == -1:
+            if tbl_where[where_index][3] == -1:
                 tbl_aux_and = filter_value(tbl_aux_and, find_column_index(tbl_aux_and, tbl_where[where_index][0], tbl_where[where_index][1]), tbl_where[where_index][4], tbl_where[where_index][2])
             else:
-                
                 tbl_aux_and = filter_column(tbl_aux_and, find_column_index(tbl_aux_and, tbl_where[where_index][0], tbl_where[where_index][1]),find_column_index(tbl, tbl_where[where_index][3], tbl_where[where_index][4]), tbl_where[where_index][2])
                 #TÁ certo
                 #for i in tbl_aux_and:
@@ -187,11 +209,15 @@ def where_execution (tbl, command_list):
         elif cmd_row[2] == kw.keyword_or:
             tbl_result_and.append(tbl_aux_and)
             tbl_aux_and = tbl
+            if tbl_where[where_index][0] == -1:
+                tbl_aux_and = filter_value(tbl_aux_and, find_column_index(tbl_aux_and, tbl_where[where_index][3], tbl_where[where_index][4]), tbl_where[where_index][1], tbl_where[where_index][2])
+            if tbl_where[where_index][3] == -1:
+                tbl_aux_and = filter_value(tbl_aux_and, find_column_index(tbl_aux_and, tbl_where[where_index][0], tbl_where[where_index][1]), tbl_where[where_index][4], tbl_where[where_index][2])
+            else:
+                tbl_aux_and = filter_column(tbl_aux_and, find_column_index(tbl_aux_and, tbl_where[where_index][0], tbl_where[where_index][1]),find_column_index(tbl, tbl_where[where_index][3], tbl_where[where_index][4]), tbl_where[where_index][2])
+            where_index += 1
 
     tbl_result_and.append(tbl_aux_and)
-
-    #for row in tbl_result_and:
-            #print(row)
 
     and_index = 0
 
@@ -209,10 +235,7 @@ def where_execution (tbl, command_list):
 def join_filter_execution (tbl, command_list):
 
     tbl_result = tbl
-
     for row in command_list:
-        if (row[2] == -2):
-            tbl_result = filter_column (tbl_result, find_column_index(tbl_result, row[0], row[1]), find_column_index(tbl_result, row[3], row[1]), '=')
-        else:
+            print(row)
             tbl_result = filter_column (tbl_result, find_column_index(tbl_result, row[0], row[1]), find_column_index(tbl_result, row[3], row[4]), row[2])
     return tbl_result

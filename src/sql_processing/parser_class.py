@@ -1,4 +1,6 @@
 import keywords
+import lexer
+
 class Node:
     def __init__(self, node_type, value=None):
         self.node_type = node_type
@@ -28,7 +30,6 @@ def parse_select(tokens):
             current_node = new_node
         elif token_type == "KEYWORD" and token_value.upper() in keywords.keywords:
             current_node.children.append(Node(token_value.upper()))
-
     return root
 
 def parse_delete(tokens):
@@ -104,3 +105,20 @@ def parse_update(tokens):
             current_node.children.append(Node(token_value.upper()))
 
     return root
+
+def parser(query):
+
+    lexerObj = lexer.Lexer(query)
+    lexerObj.tokenize()
+    tokens = lexerObj.get_tokens()
+
+    if tokens[0][1] == keywords.keyword_select:
+        return parse_select(tokens)
+    elif tokens[0][1] == keywords.keyword_delete_from:
+        return parse_delete(tokens)
+    elif tokens[0][1] == keywords.keyword_insert_into:
+        return parse_insert(tokens)
+    elif tokens[0][1] == keywords.keyword_update:
+        return parse_update(tokens)
+    else:
+        print("Query is not parseable")
