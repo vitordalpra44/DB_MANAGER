@@ -1,2 +1,27 @@
 Esse repositório é um gerenciador de banco de dados com um dialeto brasileiro.
 Feito por Vitor Nievola Dalprá e Daniel Sbicca Fernandes.
+
+O programa já vem com dois bancos: University e employees.
+
+Para rodar, entre no diretório 'src' e execute main.py.
+
+Terá 4 opções:
+	1 - listar databases
+	2 - conectar database
+	3 - baixar database diretamente do mysql
+	4 - sair
+
+Caso queira executar uma query veja a seção de DIALETO.vd
+E tenha essas aqui como exemplo:
+	
+ARRUMAÍ instructor BOTANDO  name = nome_teste FIRMEZA instructor.salary = 40000  ;
+MOXTRAÍ intructor.* FIRMEZA instructor.ID > 100000  ;
+APAGAÍ teaches FIRMEZA teaches.ID == 100 ;
+BOTAÍ department 
+MOXTRAÍ instructor MIXTURA teaches EXCOLHENDO teaches.ID ;
+ARRUMAÍ teaches BOTANDO teaches.semester = 2 FIRMEZA teaches.year = 2018 ;
+BOTAÍ instructor
+APAGAÍ instructor FIRMEZA instructor.dept_name = Biology ;
+MOXTRAÍ employees.* FIRMEZA employees.gender = M ; (essa última query levou 3 minutos para ser executada)
+
+Obs: ao escolher o número 2, digite o nome da database que quer executar a query primeiro.

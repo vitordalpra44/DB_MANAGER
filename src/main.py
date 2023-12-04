@@ -11,13 +11,13 @@ import getpass
 
 mode = 0
 while(mode != '4'):
-    
-    print("1 - Listar tabelas")
+    print("-------------------------\n        CARIOCA_DB        \n-------------------------")
+    print("1 - Listar databases")
     print("2 - Conectar a database")
     print("3 - Extrair do MySQL")
     print("4 - Sair")
     mode = input("Selecione a opção:")
-
+    os.system('clear')
     if (mode == '1'):
         directory_path = Path("../databases")
 
@@ -25,7 +25,7 @@ while(mode != '4'):
 
         dbs = [item for item in items if item.is_dir()]
 
-        print("Databases:\n", [db.name for db in dbs])
+        print("Databases: ", [db.name for db in dbs])
 
 
     if (mode == '2'):
